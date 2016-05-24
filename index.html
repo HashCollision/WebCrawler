@@ -1,0 +1,65 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <a href="README.html">README</a>
+    <div id="sitemap-template"></div>
+</body>
+<script id="list" type="x-handlebars-template">
+    <h1>{{sitemap}}</h1>
+    {{#each sites}}
+    <li>
+        {{url}} {{#if sites}}
+
+        <ul>Sites
+            {{> sites}}
+        </ul>
+        {{/if}} {{#if assets}}
+
+        <ul>
+            {{#each assets}}
+            <li>
+                {{this}}
+            </li>
+            {{/each}}
+
+
+        </ul>
+        {{/if}}
+    </li>
+    {{/each}}
+</script>
+
+<!-- not used, i wanted to have a recursive list of sites, but it ended up being a flat list with static assets -->
+<script id="main" type="x-handlebars-template">
+    <ul>
+        {{> sites}}
+    </ul>
+</script>
+
+<script type="text/javascript">
+
+
+    // The main template.
+    var main = Handlebars.compile($("#main").html());
+
+    // Register the list partial that "main" uses.
+    Handlebars.registerPartial("sites", $("#list").html());
+    
+    $.get('/sitemap.json', function (data) {
+        typeof data == "string" ? (data = JSON.parse(data)) : void 0;
+        console.log(data)
+        $("#sitemap-template").html(main({ sites: data.sites, sitemap: data.sitemap }));
+    });
+
+</script>
+
+
+
+</html>
